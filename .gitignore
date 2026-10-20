@@ -1,0 +1,16 @@
+node_modules/
+.next/
+out/
+*.log
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+.env
+.env.local
+# Reports, crawls, leads and settings written by the app.
+data/*
+!data/.gitkeep

@@ -1,0 +1,103 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    name: test (node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm run --if-present lint
+      - name: Type-check
+        run: pnpm run --if-present typecheck
+      - name: Build
+        run: pnpm run --if-present build
+      - name: Test
+        run: pnpm run --if-present test
+
+  # Runs the GitHub Action from this repository on two versions of a test page:
+  # the same page has to pass, and a page that lost its title has to fail.
+  action:
+    name: action
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Serve the test pages
+        run: |
+          python3 -m http.server 8081 --directory tests/fixtures/action/before > /dev/null 2>&1 &
+          python3 -m http.server 8082 --directory tests/fixtures/action/after > /dev/null 2>&1 &
+          sleep 1
+      - name: Check a page against itself
+        id: same
+        uses: ./
+        with:
+          url: http://127.0.0.1:8081/
+          baseline-url: http://127.0.0.1:8081/
+          allow-private: true
+          comment: false
+      - name: Check a page that got worse
+        id: worse
+        continue-on-error: true
+        uses: ./
+        with:
+          url: http://127.0.0.1:8082/
+          baseline-url: http://127.0.0.1:8081/
+          allow-private: true
+          comment: false
+      - name: Make sure the action told them apart
+        env:
+          SAME_PASSED: ${{ steps.same.outputs.passed }}
+          WORSE_OUTCOME: ${{ steps.worse.outcome }}
+          WORSE_PASSED: ${{ steps.worse.outputs.passed }}
+          NEW_PROBLEMS: ${{ steps.worse.outputs.new-problems }}
+        run: |
+          test "$SAME_PASSED" = true
+          test "$WORSE_OUTCOME" = failure
+          test "$WORSE_PASSED" = false
+          test "$NEW_PROBLEMS" -gt 0
+
+  # One stable check name for the branch ruleset to require.
+  # Add any new job to `needs` and it becomes required automatically.
+  ci:
+    name: ci
+    if: always()
+    needs: [test, action]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify all jobs passed
+        env:
+          FAILED: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: |
+          if [ "$FAILED" = "true" ]; then
+            echo "::error::One or more CI jobs failed."
+            exit 1
+          fi
+          echo "All CI jobs passed."

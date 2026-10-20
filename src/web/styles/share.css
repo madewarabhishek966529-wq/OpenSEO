@@ -1,0 +1,1046 @@
+/* ── Share previews: platform lookalikes, images and icons, tags ──────────── */
+
+.share-previews {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	container-type: inline-size;
+}
+
+.share-tabs {
+	position: static;
+	margin-bottom: 0;
+	backdrop-filter: none;
+}
+
+.share-tabs .filter-tab[aria-selected='true'] .status-mark {
+	box-shadow: 0 0 0 1.5px var(--surface);
+}
+
+.share-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+	align-items: start;
+	gap: 14px;
+}
+
+.share-grid.is-single {
+	grid-template-columns: minmax(0, 560px);
+}
+
+.share-card {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	border: 1px solid var(--line);
+	border-radius: var(--radius-lg);
+	background: var(--surface);
+	overflow: hidden;
+}
+
+.share-card-head {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 14px;
+}
+
+.share-card-head h3 {
+	font-size: 14.5px;
+}
+
+.share-card-head .muted {
+	margin-left: auto;
+	font-size: 12px;
+}
+
+.share-stage {
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	padding: 18px 16px;
+	border-block: 1px solid var(--line);
+	background: var(--surface-sunk);
+}
+
+.share-stage--slack {
+	justify-content: flex-start;
+	background: light-dark(#ffffff, #1a1d21);
+}
+
+.share-stage--discord {
+	justify-content: flex-start;
+	background: #313338;
+}
+
+.share-stage--whatsapp {
+	justify-content: flex-end;
+	background: light-dark(#efeae2, #0b141a);
+}
+
+.share-stage--imessage {
+	justify-content: flex-end;
+	background: light-dark(#ffffff, #000000);
+}
+
+.share-notes {
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+	margin: 0;
+	padding: 12px 14px 14px;
+	list-style: none;
+	color: var(--ink-2);
+	font-size: 13px;
+	line-height: 1.45;
+}
+
+.share-notes li {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+}
+
+.share-notes .status-mark {
+	margin-top: 1px;
+}
+
+.share-disclaimer {
+	margin: 0;
+	font-size: 12.5px;
+	line-height: 1.5;
+}
+
+.share-subtitle {
+	margin-top: 10px;
+	font-size: 16px;
+}
+
+/* Images that come from the checked site */
+
+.preview-image-missing {
+	display: grid;
+	place-items: center;
+	color: #8a94a3;
+	background: #e4e7eb;
+}
+
+/* Wins over the display of the image class it stands in for. */
+.mock .preview-image-missing {
+	display: grid;
+}
+
+.preview-image-missing svg {
+	max-width: 70%;
+	max-height: 70%;
+}
+
+.mock {
+	width: 100%;
+	max-width: 440px;
+	min-width: 0;
+	font-family:
+		system-ui,
+		-apple-system,
+		'Segoe UI',
+		Roboto,
+		Helvetica,
+		Arial,
+		sans-serif;
+	text-align: left;
+	overflow: hidden;
+}
+
+.mock-image {
+	display: block;
+	width: 100%;
+	aspect-ratio: 1.91 / 1;
+	object-fit: cover;
+	background-color: #dfe3e8;
+}
+
+.mock-clamp-1,
+.mock-clamp-2,
+.mock-clamp-3 {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.mock-clamp-1 {
+	-webkit-line-clamp: 1;
+}
+
+.mock-clamp-2 {
+	-webkit-line-clamp: 2;
+}
+
+.mock-clamp-3 {
+	-webkit-line-clamp: 3;
+}
+
+/* Google */
+
+.mock-google {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding: 14px 16px;
+	border-radius: 12px;
+	background: light-dark(#ffffff, #1f1f1f);
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.mock-google-site {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 4px;
+}
+
+.mock-google-favicon {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 28px;
+	height: 28px;
+	border: 1px solid light-dark(#dadce0, #3c4043);
+	border-radius: 50%;
+	background: light-dark(#f1f3f4, #303134);
+	color: #5f6368;
+	overflow: hidden;
+}
+
+.mock-google-favicon img,
+.mock-google-favicon .preview-image-missing {
+	width: 18px;
+	height: 18px;
+	object-fit: contain;
+	background: none;
+}
+
+.mock-google-names {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	line-height: 1.3;
+}
+
+.mock-google-name {
+	color: light-dark(#202124, #dadce0);
+	font-size: 14px;
+}
+
+.mock-google-url {
+	color: light-dark(#4d5156, #bdc1c6);
+	font-size: 12px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.mock-google-title {
+	color: light-dark(#1a0dab, #99c3ff);
+	font-size: 20px;
+	line-height: 1.3;
+}
+
+.mock-google-description {
+	color: light-dark(#4d5156, #bdc1c6);
+	font-size: 14px;
+	line-height: 1.58;
+}
+
+/* Facebook */
+
+.mock-facebook {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid light-dark(#dadde1, #3e4042);
+	border-radius: 8px;
+	background: light-dark(#f0f2f5, #3a3b3c);
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+.mock-facebook-text {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	min-width: 0;
+	padding: 10px 12px 12px;
+	color: light-dark(#65676b, #b0b3b8);
+	font-size: 14px;
+	line-height: 1.3;
+}
+
+.mock-facebook-text strong {
+	color: light-dark(#050505, #e4e6eb);
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.mock-facebook-domain {
+	font-size: 12px;
+	text-transform: uppercase;
+}
+
+.mock-facebook.is-small {
+	flex-direction: row;
+	align-items: center;
+}
+
+.mock-facebook.is-small .mock-image {
+	width: 120px;
+	flex: none;
+	aspect-ratio: 1;
+}
+
+/* X */
+
+.mock-x {
+	color: light-dark(#0f1419, #e7e9ea);
+	font-size: 15px;
+}
+
+.mock-x-media {
+	position: relative;
+	display: block;
+	border: 1px solid light-dark(#cfd9de, #2f3336);
+	border-radius: 16px;
+	overflow: hidden;
+}
+
+.mock-x-chip {
+	position: absolute;
+	left: 12px;
+	bottom: 12px;
+	max-width: calc(100% - 24px);
+	padding: 1px 6px;
+	border-radius: 4px;
+	background: rgb(0 0 0 / 0.77);
+	color: #ffffff;
+	font-size: 13px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.mock-x-from {
+	display: block;
+	margin-top: 4px;
+	color: light-dark(#536471, #71767b);
+	font-size: 13px;
+}
+
+.mock-x.is-small {
+	display: flex;
+	border: 1px solid light-dark(#cfd9de, #2f3336);
+	border-radius: 16px;
+	background: light-dark(#ffffff, #000000);
+}
+
+.mock-x.is-small .mock-image {
+	width: 112px;
+	flex: none;
+	aspect-ratio: 1;
+	border-right: 1px solid light-dark(#cfd9de, #2f3336);
+}
+
+.mock-x-text {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 2px;
+	min-width: 0;
+	padding: 10px 14px;
+	font-size: 14px;
+}
+
+.mock-x-domain {
+	color: light-dark(#536471, #71767b);
+}
+
+/* LinkedIn */
+
+.mock-linkedin {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid light-dark(#e0dfdc, #38434f);
+	border-radius: 8px;
+	background: light-dark(#ffffff, #1b1f23);
+}
+
+.mock-linkedin-text {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	min-width: 0;
+	padding: 10px 12px;
+	background: light-dark(#eef3f8, #1d2226);
+	color: light-dark(rgb(0 0 0 / 0.9), rgb(255 255 255 / 0.9));
+	font-size: 14px;
+	line-height: 1.35;
+}
+
+.mock-linkedin-text strong {
+	font-weight: 600;
+}
+
+.mock-linkedin-domain {
+	color: light-dark(rgb(0 0 0 / 0.6), rgb(255 255 255 / 0.6));
+	font-size: 12px;
+}
+
+.mock-linkedin.is-small {
+	flex-direction: row;
+	align-items: center;
+}
+
+.mock-linkedin.is-small .mock-image {
+	width: 128px;
+	flex: none;
+	aspect-ratio: 16 / 9;
+}
+
+.mock-linkedin.is-small .mock-linkedin-text {
+	background: none;
+}
+
+/* Slack */
+
+.mock-slack {
+	display: flex;
+	gap: 12px;
+	padding: 2px 0 2px 12px;
+	border-left: 4px solid light-dark(#dddddd, #4a4d52);
+	color: light-dark(#1d1c1d, #d1d2d3);
+	font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-size: 15px;
+	line-height: 1.45;
+}
+
+.mock-slack-body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.mock-slack-site {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.mock-slack-icon {
+	width: 16px;
+	height: 16px;
+	border-radius: 3px;
+	object-fit: contain;
+}
+
+.mock-slack-title {
+	color: light-dark(#1264a3, #1d9bd1);
+	font-weight: 700;
+}
+
+.mock-slack-image {
+	max-width: 360px;
+	margin-top: 6px;
+	border-radius: 8px;
+}
+
+.mock-slack-thumb,
+.mock-discord-thumb {
+	width: 72px;
+	height: 72px;
+	flex: none;
+	aspect-ratio: 1;
+	border-radius: 6px;
+}
+
+/* Discord: dark, like most people use it */
+
+.mock-discord {
+	display: flex;
+	gap: 16px;
+	max-width: 432px;
+	padding: 8px 16px 16px 12px;
+	border-left: 4px solid #1e1f22;
+	border-radius: 4px;
+	background: #2b2d31;
+	color: #dbdee1;
+	font-family: 'Noto Sans', Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	line-height: 1.375;
+}
+
+.mock-discord-body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 8px;
+	min-width: 0;
+	padding-top: 8px;
+}
+
+.mock-discord-site {
+	color: #b5bac1;
+	font-size: 12px;
+}
+
+.mock-discord-title {
+	color: #00a8fc;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.mock-discord-image {
+	border-radius: 4px;
+}
+
+.mock-discord-thumb {
+	width: 80px;
+	height: 80px;
+	margin-top: 16px;
+	border-radius: 4px;
+}
+
+/* WhatsApp: a sent message */
+
+.mock-whatsapp {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	max-width: 330px;
+	padding: 4px 4px 8px;
+	border-radius: 8px 0 8px 8px;
+	background: light-dark(#d9fdd3, #005c4b);
+	box-shadow: 0 1px 0.5px rgb(11 20 26 / 0.13);
+	color: light-dark(#111b21, #e9edef);
+	font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+	font-size: 14px;
+}
+
+.mock-whatsapp-card {
+	display: flex;
+	flex-direction: column;
+	border-radius: 6px;
+	background: light-dark(#d1f4cc, #025144);
+	overflow: hidden;
+}
+
+.mock-whatsapp-card.is-small {
+	flex-direction: row;
+}
+
+.mock-whatsapp-card.is-small .mock-image {
+	width: 84px;
+	flex: none;
+	aspect-ratio: 1;
+}
+
+.mock-whatsapp-text {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+	padding: 6px 10px 8px;
+	color: light-dark(#667781, #8696a0);
+	font-size: 13px;
+	line-height: 1.35;
+}
+
+.mock-whatsapp-text strong {
+	color: light-dark(#111b21, #e9edef);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.mock-whatsapp-domain {
+	font-size: 12px;
+}
+
+.mock-whatsapp-link {
+	padding: 0 6px;
+	color: light-dark(#027eb5, #53bdeb);
+	overflow-wrap: anywhere;
+}
+
+
+/* Telegram */
+.mock-telegram {
+	max-width: 360px;
+	overflow: hidden;
+	border: 1px solid #dfe3e8;
+	border-radius: 8px;
+	background: #ffffff;
+	color: #202938;
+	font-size: 13px;
+}
+
+.mock-telegram-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 10px 12px;
+	background: #ffffff;
+}
+
+.mock-telegram-heading {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+}
+
+.mock-telegram-dot {
+	width: 14px;
+	height: 14px;
+	flex: none;
+	border-radius: 50%;
+	background: #e99a00;
+}
+
+.mock-telegram-kind {
+	color: #8490a2;
+	font-size: 12px;
+}
+
+.mock-telegram-body {
+	padding: 12px;
+	background: linear-gradient(135deg, #dce9c8, #b9d7a9);
+}
+
+.mock-telegram-card {
+	padding: 9px;
+	border-radius: 12px;
+	background: #efffdf;
+	min-width: 0;
+}
+
+.mock-telegram-domain {
+	display: block;
+	margin-bottom: 6px;
+	color: #42a846;
+	font-size: 12px;
+	overflow-wrap: anywhere;
+}
+
+.mock-telegram-content {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	padding: 8px;
+	border-left: 3px solid #42a846;
+	border-radius: 5px;
+	background: #d9f2cb;
+	min-width: 0;
+}
+
+.mock-telegram-copy {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 3px;
+	min-width: 0;
+	line-height: 1.4;
+	overflow-wrap: anywhere;
+}
+
+.mock-telegram-site {
+	color: #329c3a;
+}
+
+.mock-telegram .mock-image {
+	display: block;
+	object-fit: cover;
+}
+
+.mock-telegram-image {
+	width: 100%;
+	margin-top: 8px;
+	border-radius: 5px;
+	aspect-ratio: 16 / 9;
+}
+
+.mock-telegram-thumb {
+	width: 60px;
+	height: 60px;
+	flex: none;
+	border-radius: 5px;
+}
+
+.mock-telegram.is-small .mock-telegram-image {
+	display: none;
+}
+
+.mock-telegram.is-large .mock-telegram-thumb {
+	display: none;
+}
+
+.mock-telegram.is-none .mock-telegram-content {
+	border-left: 3px solid #42a846;
+}
+
+.telegram-layout-toggle {
+	display: flex;
+	gap: 6px;
+	margin-bottom: 10px;
+}
+
+.telegram-layout-toggle button {
+	padding: 4px 10px;
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	background: var(--surface);
+	color: inherit;
+	cursor: pointer;
+}
+
+.telegram-layout-toggle button[aria-pressed='true'] {
+	border-color: var(--accent);
+	background: var(--accent);
+	color: var(--on-accent);
+}
+
+
+.mock-telegram.is-none .mock-telegram-image,
+.mock-telegram.is-none .mock-telegram-thumb,
+.mock-telegram.is-none .preview-image-missing {
+	display: none;
+}
+
+/* iMessage */
+
+.mock-imessage {
+	max-width: 300px;
+	border-radius: 18px;
+	background: light-dark(#e9e9eb, #262628);
+	color: light-dark(#000000, #ffffff);
+	font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif;
+	font-size: 13px;
+}
+
+.mock-imessage-footer {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 9px 12px 10px;
+}
+
+.mock-imessage-text {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 1px;
+	min-width: 0;
+	line-height: 1.3;
+}
+
+.mock-imessage-text strong {
+	font-weight: 600;
+}
+
+.mock-imessage-text span {
+	color: light-dark(#8e8e93, #98989d);
+	font-size: 12px;
+}
+
+.mock-imessage-icon {
+	width: 40px;
+	height: 40px;
+	flex: none;
+	border-radius: 9px;
+	object-fit: cover;
+}
+
+/* Images and icons */
+
+.asset-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+	align-items: start;
+	gap: 10px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.asset-tile {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	min-width: 0;
+	padding: 12px;
+	border: 1px solid var(--line);
+	border-radius: var(--radius-md);
+	background: var(--surface);
+}
+
+.asset-tile.is-wide {
+	flex-direction: column;
+}
+
+.asset-tile-preview {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 64px;
+	height: 64px;
+	border: 1px solid var(--line);
+	border-radius: 8px;
+	background-color: #ffffff;
+	background-image: conic-gradient(#e9ecf0 25%, transparent 0 50%, #e9ecf0 0 75%, transparent 0);
+	background-size: 12px 12px;
+	overflow: hidden;
+}
+
+.asset-tile.is-wide .asset-tile-preview {
+	width: 100%;
+	height: auto;
+	aspect-ratio: 1.91 / 1;
+}
+
+.asset-tile-image {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+}
+
+.asset-tile.is-wide .asset-tile-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.asset-tile-preview .preview-image-missing {
+	width: 100%;
+	height: 100%;
+	background: var(--field);
+}
+
+.asset-tile-text {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+	max-width: 100%;
+	font-size: 12.5px;
+	line-height: 1.4;
+}
+
+.asset-tile-head {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 2px;
+	font-size: 13.5px;
+}
+
+.asset-tile-url {
+	color: var(--ink-3);
+	font-size: 11.5px;
+	text-decoration: none;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.asset-tile-url:hover {
+	color: var(--ink);
+	text-decoration: underline;
+}
+
+.asset-tile-source {
+	font-size: 11.5px;
+}
+
+.share-facts {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px 32px;
+	margin: 0;
+	padding: 12px 14px;
+	border: 1px solid var(--line);
+	border-radius: var(--radius-md);
+	background: var(--surface-sunk);
+}
+
+.share-facts div {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	min-width: 0;
+}
+
+.share-facts dt {
+	color: var(--ink-3);
+	font-size: 12px;
+}
+
+.share-facts dd {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin: 0;
+	font-size: 13px;
+	overflow-wrap: anywhere;
+}
+
+.share-swatch {
+	width: 16px;
+	height: 16px;
+	flex: none;
+	border: 1px solid rgb(0 0 0 / 0.12);
+	border-radius: 4px;
+}
+
+/* Share images sit beside their facts when there's room for two columns. */
+@container (min-width: 560px) {
+	.asset-tile.is-wide {
+		grid-column: span 2;
+		flex-direction: row;
+	}
+
+	.asset-tile.is-wide .asset-tile-preview {
+		width: 230px;
+	}
+}
+
+/* Every tag */
+
+.share-tags {
+	border: 1px solid var(--line);
+	border-radius: var(--radius-md);
+	background: var(--surface);
+	overflow: hidden;
+}
+
+.share-tags summary {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 11px 14px;
+	font-weight: 550;
+	cursor: pointer;
+}
+
+.share-tags summary::-webkit-details-marker {
+	display: none;
+}
+
+.share-tags[open] summary {
+	border-bottom: 1px solid var(--line);
+}
+
+.share-tags-chevron {
+	margin-left: auto;
+	color: var(--ink-3);
+	transition: transform 0.15s var(--ease-out);
+}
+
+.share-tags[open] .share-tags-chevron {
+	transform: rotate(180deg);
+}
+
+.share-tags .detail-scroll {
+	margin: 0;
+}
+
+.share-tags-table th[colspan] {
+	background: var(--surface-sunk);
+	color: var(--ink-2);
+	text-align: left;
+}
+
+.share-tags-table td:first-child {
+	width: 1%;
+	color: var(--ink-2);
+	white-space: nowrap;
+}
+
+.share-tags-table td:last-child {
+	overflow-wrap: anywhere;
+}
+
+/* The share preview screen */
+
+.preview-result {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	transition: opacity 0.2s;
+}
+
+.preview-result.is-stale {
+	opacity: 0.5;
+}
+
+.preview-result-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px 16px;
+	padding: 14px 16px;
+	border: 1px solid var(--line);
+	border-radius: var(--radius-lg);
+	background: var(--surface);
+}
+
+.preview-result-page {
+	display: flex;
+	flex: 1 1 240px;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.preview-result-page strong {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.preview-result-page a {
+	color: var(--ink-3);
+	font-size: 12.5px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.preview-result-score {
+	color: var(--ink-2);
+	font-size: 13px;
+}
+
+/* The report's sidebar link to the previews */
+
+.report-sidebar-icon {
+	display: inline-grid;
+	flex: none;
+	place-items: center;
+	width: 26px;
+	height: 26px;
+	border-radius: 8px;
+	background: var(--ink);
+	color: var(--surface);
+}
+
+@media (max-width: 640px) {
+	/* One scrolling row of platforms instead of four wrapped ones. */
+	.share-tabs {
+		flex-wrap: nowrap;
+		width: auto;
+		overflow-x: auto;
+		scrollbar-width: none;
+	}
+
+	.share-tabs .filter-tab {
+		flex: none;
+	}
+}

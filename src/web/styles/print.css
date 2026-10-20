@@ -1,0 +1,75 @@
+/* ── Print / Save as PDF: the report on white paper, every check expanded ─ */
+
+@media print {
+	:root {
+		color-scheme: light;
+	}
+
+	@page {
+		margin: 14mm 12mm;
+	}
+
+	body {
+		background: #ffffff;
+		font-size: 12px;
+	}
+
+	.report-page {
+		padding: 0;
+		max-width: none;
+	}
+
+	.report-top-bar {
+		position: static;
+		box-shadow: none;
+		border: 0;
+		padding: 0 0 8px;
+		backdrop-filter: none;
+	}
+
+	.report-top-bar-actions,
+	.report-sidebar,
+	.filter-tabs,
+	.share-tags,
+	.check-row-chevron {
+		display: none !important;
+	}
+
+	.report-window {
+		display: block;
+	}
+
+	.report-card,
+	.report-hero {
+		box-shadow: none;
+		break-inside: avoid-page;
+		margin-bottom: 10px;
+	}
+
+	.category-section {
+		break-inside: auto;
+	}
+
+	.check-row {
+		break-inside: avoid;
+	}
+
+	.check-row-body {
+		display: flex !important;
+	}
+
+	.report-cta {
+		print-color-adjust: exact;
+		-webkit-print-color-adjust: exact;
+	}
+
+	.status-mark,
+	.category-tile,
+	.grade-ring,
+	.score-bar,
+	.chip,
+	.brand-mark-tile {
+		print-color-adjust: exact;
+		-webkit-print-color-adjust: exact;
+	}
+}

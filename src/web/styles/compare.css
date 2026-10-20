@@ -1,0 +1,432 @@
+/* ── Compare: two audits side by side, and the picker that opens them ───── */
+
+.comparison-main {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	width: 100%;
+	max-width: 1080px;
+	margin: 0 auto;
+}
+
+.comparison-sides {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+	align-items: stretch;
+	gap: 16px;
+}
+
+.comparison-side {
+	display: flex;
+	align-items: flex-start;
+	gap: 14px;
+	min-width: 0;
+	padding: 16px;
+	border: 1px solid var(--line);
+	border-radius: var(--radius-lg);
+	background: var(--surface-2);
+}
+
+.comparison-side-text {
+	display: flex;
+	flex: 1;
+	min-width: 0;
+	flex-direction: column;
+	gap: 3px;
+	font-size: 13px;
+}
+
+.comparison-side-label {
+	width: fit-content;
+	max-width: 100%;
+	margin-bottom: 4px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.comparison-side-title {
+	font-size: 15px;
+	overflow-wrap: anywhere;
+}
+
+.comparison-side-url {
+	color: var(--ink-2);
+	font-size: 12.5px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.comparison-side-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	width: fit-content;
+	margin-top: 6px;
+	font-weight: 550;
+	text-decoration: none;
+}
+
+.comparison-side-link:hover {
+	text-decoration: underline;
+}
+
+.comparison-delta {
+	display: flex;
+	flex-direction: column;
+	align-self: center;
+	align-items: center;
+	gap: 4px;
+	font-size: 12px;
+}
+
+.comparison-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 14px;
+	align-items: start;
+}
+
+.comparison-table th,
+.comparison-table td {
+	padding-left: 6px;
+	padding-right: 6px;
+}
+
+.comparison-table tbody th {
+	padding-top: 11px;
+	padding-bottom: 11px;
+	color: var(--ink);
+	font-size: 13.5px;
+	font-weight: 550;
+}
+
+.comparison-table tbody tr:last-child th {
+	border-bottom: 0;
+}
+
+.comparison-table td {
+	white-space: nowrap;
+}
+
+.comparison-table-name {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.comparison-table-side {
+	max-width: 120px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.comparison-table .comparison-table-change {
+	text-align: right;
+}
+
+/* A change in a number: arrow, value, and a tint that says whether it's good. */
+
+.delta {
+	display: inline-flex;
+	align-items: center;
+	gap: 3px;
+	padding: 2px 7px;
+	border-radius: 6px;
+	background: var(--field);
+	color: var(--ink);
+	font-size: 12.5px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.delta svg {
+	color: var(--ink-3);
+}
+
+.delta.is-pass {
+	background: var(--pass-soft);
+}
+
+.delta.is-pass svg {
+	color: var(--pass);
+}
+
+.delta.is-fail {
+	background: var(--fail-soft);
+}
+
+.delta.is-fail svg {
+	color: var(--fail);
+}
+
+.delta--lg {
+	gap: 6px;
+	padding: 8px 14px;
+	border-radius: var(--radius-md);
+	font-size: 22px;
+}
+
+/* What changed, grouped */
+
+.change-groups {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.change-group {
+	border: 1px solid var(--line);
+	border-radius: var(--radius-md);
+	overflow: hidden;
+}
+
+.change-group-head {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 12px 14px;
+	background: var(--surface-2);
+	cursor: pointer;
+	list-style: none;
+}
+
+.change-group-head::-webkit-details-marker {
+	display: none;
+}
+
+.change-group-head:hover {
+	background: var(--hover);
+}
+
+.change-group-mark {
+	flex: none;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: var(--info);
+}
+
+.change-group-mark.is-pass {
+	background: var(--pass);
+}
+
+.change-group-mark.is-warn {
+	background: var(--warn);
+}
+
+.change-group-mark.is-fail {
+	background: var(--fail);
+}
+
+.change-group-title {
+	font-weight: 600;
+}
+
+.change-group-count {
+	padding: 1px 6px;
+	border-radius: 5px;
+	background: var(--field);
+	color: var(--ink-2);
+	font-size: 11.5px;
+}
+
+.change-group-description {
+	flex: 1;
+	min-width: 0;
+	font-size: 12.5px;
+}
+
+.change-group-chevron {
+	flex: none;
+	color: var(--ink-3);
+	transition: transform 0.2s var(--ease-out);
+}
+
+.change-group[open] .change-group-chevron {
+	transform: rotate(180deg);
+}
+
+.change-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	border-top: 1px solid var(--line);
+}
+
+.change-row {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 12px 14px;
+}
+
+.change-row + .change-row {
+	border-top: 1px solid var(--line);
+}
+
+.change-row-marks {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	gap: 4px;
+}
+
+.change-row-arrow {
+	color: var(--ink-3);
+}
+
+.change-row-missing {
+	color: var(--ink-3);
+	font-size: 11.5px;
+}
+
+.change-row-text {
+	display: flex;
+	flex: 1;
+	min-width: 0;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.change-row-title {
+	width: fit-content;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.change-row-title:hover {
+	text-decoration: underline;
+}
+
+.change-row-summary {
+	color: var(--ink-2);
+	font-size: 13.5px;
+}
+
+.change-row-side {
+	display: inline-block;
+	margin-right: 8px;
+	padding: 0 6px;
+	border-radius: 5px;
+	background: var(--field);
+	color: var(--ink-2);
+	font-family: var(--font-data);
+	font-size: 11px;
+	font-weight: 500;
+}
+
+.change-row-category {
+	display: flex;
+	flex: none;
+}
+
+/* The picker */
+
+.compare-slots {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+	align-items: start;
+	gap: 12px;
+}
+
+.compare-swap {
+	margin-top: 22px;
+}
+
+.compare-slot {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.compare-slot-card {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	min-height: 64px;
+	padding: 10px 12px;
+	border: 1px solid var(--line-strong);
+	border-radius: var(--radius-md);
+	background: var(--surface);
+}
+
+.compare-slot-text {
+	display: flex;
+	flex: 1;
+	min-width: 0;
+	flex-direction: column;
+	font-size: 13px;
+}
+
+.compare-slot-text strong {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.compare-slot-or {
+	font-size: 12.5px;
+}
+
+.compare-slot-audit {
+	display: flex;
+	gap: 8px;
+}
+
+.compare-form-footer {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding-top: 12px;
+	border-top: 1px solid var(--line);
+	font-size: 12.5px;
+}
+
+@media (max-width: 900px) {
+	.comparison-grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+@media (max-width: 760px) {
+	.comparison-sides,
+	.compare-slots {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.comparison-delta {
+		flex-direction: row;
+		justify-content: center;
+	}
+
+	.compare-swap {
+		justify-self: center;
+		margin-top: 0;
+		transform: rotate(90deg);
+	}
+
+	.change-group-description {
+		display: none;
+	}
+
+	.change-row-category {
+		display: none;
+	}
+}
+
+@media print {
+	.comparison-side,
+	.delta,
+	.change-group-mark {
+		print-color-adjust: exact;
+		-webkit-print-color-adjust: exact;
+	}
+
+	.comparison-side-link {
+		display: none;
+	}
+}

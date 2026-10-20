@@ -1,0 +1,129 @@
+name: OpenSEO audit
+description: Audit preview deploys with OpenSEO and fail the pull request when the SEO score drops or new problems appear.
+author: Alexander Silver
+branding:
+  icon: search
+  color: green
+
+inputs:
+  url:
+    description: The page to audit, usually your preview deploy.
+    required: true
+  baseline-url:
+    description: The page to compare it with, usually the same page in production. Without it, only min-score applies.
+    required: false
+  paths:
+    description: More pages to audit on both sites, one path per line or separated by commas (like / and /pricing). Without it, the two URLs are audited as given.
+    required: false
+  max-score-drop:
+    description: Fail when a page scores more than this many points below the baseline.
+    required: false
+    default: "2"
+  min-score:
+    description: Fail when a page scores below this, from 0 to 100.
+    required: false
+    default: "0"
+  fail-on:
+    description: Which new problems fail the check. "fail" for checks that start failing, "warn" for checks that get any worse, or "none".
+    required: false
+    default: fail
+  ignore-checks:
+    description: Check IDs to leave out, like robots-txt, separated by commas or new lines. Every report in the OpenSEO app lists the IDs.
+    required: false
+  preview:
+    description: Treat url as a preview deploy, and forgive the X-Robots-Tag noindex header preview hosts add, canonical tags pointing at production and the domain's email records. "auto" does when the two URLs are on different hosts; "true" or "false" to choose.
+    required: false
+    default: auto
+  headers:
+    description: 'Headers to send to the preview host only, one "Name: value" per line, like the protection bypass token Vercel gives for automation.'
+    required: false
+  comment:
+    description: Post the results as a comment on the pull request, and update it on later runs. Needs the pull-requests write permission.
+    required: false
+    default: "true"
+  github-token:
+    description: The token used to comment on the pull request.
+    required: false
+    default: ${{ github.token }}
+  pagespeed-api-key:
+    description: A Google PageSpeed Insights API key, to include Core Web Vitals. Adds about 20 seconds per page.
+    required: false
+  allow-private:
+    description: Allow auditing localhost and private addresses, for a server started earlier in the job.
+    required: false
+    default: "false"
+
+outputs:
+  passed:
+    description: '"true" when every page passed, "false" when the check failed.'
+    value: ${{ steps.check.outputs.passed }}
+  score:
+    description: The audited page's score (the first one, with paths), as the check scored it.
+    value: ${{ steps.check.outputs.score }}
+  grade:
+    description: The audited page's letter grade.
+    value: ${{ steps.check.outputs.grade }}
+  baseline-score:
+    description: The baseline page's score.
+    value: ${{ steps.check.outputs.baseline-score }}
+  score-change:
+    description: The score minus the baseline's score.
+    value: ${{ steps.check.outputs.score-change }}
+  new-problems:
+    description: How many checks started failing, across all pages.
+    value: ${{ steps.check.outputs.new-problems }}
+  fixed:
+    description: How many problems were fixed, across all pages.
+    value: ${{ steps.check.outputs.fixed }}
+  results:
+    description: The path of a JSON file with the full results and reports, to upload as an artifact.
+    value: ${{ steps.check.outputs.results }}
+
+runs:
+  using: composite
+  steps:
+    - name: Check the Node.js version
+      id: node
+      shell: bash
+      run: |
+        if node -e 'const [major, minor] = process.versions.node.split(".").map(Number); process.exit(major > 22 || (major === 22 && minor >= 12) ? 0 : 1)' 2>/dev/null; then
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+        fi
+
+    # Only when the runner's Node.js is too old, so the rest of the job keeps the version it set up.
+    - name: Set up Node.js
+      if: steps.node.outputs.ready != 'true'
+      uses: actions/setup-node@v7
+      with:
+        node-version: 24
+
+    - name: Install OpenSEO
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      # pnpm leaves out devDependencies under NODE_ENV=production, and the check needs tsx.
+      env:
+        NODE_ENV: development
+      run: |
+        echo "::group::Install OpenSEO"
+        npx --yes "$(node -p 'require("./package.json").packageManager')" install --frozen-lockfile
+        echo "::endgroup::"
+
+    - name: Audit
+      id: check
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      env:
+        INPUT_URL: ${{ inputs.url }}
+        INPUT_BASELINE_URL: ${{ inputs.baseline-url }}
+        INPUT_PATHS: ${{ inputs.paths }}
+        INPUT_MAX_SCORE_DROP: ${{ inputs.max-score-drop }}
+        INPUT_MIN_SCORE: ${{ inputs.min-score }}
+        INPUT_FAIL_ON: ${{ inputs.fail-on }}
+        INPUT_IGNORE_CHECKS: ${{ inputs.ignore-checks }}
+        INPUT_PREVIEW: ${{ inputs.preview }}
+        INPUT_HEADERS: ${{ inputs.headers }}
+        INPUT_COMMENT: ${{ inputs.comment }}
+        INPUT_GITHUB_TOKEN: ${{ inputs.github-token }}
+        PAGESPEED_API_KEY: ${{ inputs.pagespeed-api-key }}
+        OPENSEO_ALLOW_PRIVATE: ${{ inputs.allow-private }}
+      run: node_modules/.bin/tsx scripts/check.ts

@@ -1,0 +1,123 @@
+name: release
+
+# release-please keeps a "release PR" open that bumps the version and updates
+# CHANGELOG.md from Conventional Commits. Merging it tags and publishes a GitHub Release.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release-please:
+    name: release-please
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v5
+        id: release
+        with:
+          # A PAT in RELEASE_PLEASE_TOKEN lets CI run on the release PR.
+          # GITHUB_TOKEN works too, but PRs it opens don't trigger workflows.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  # Publish the Docker image to ghcr.io whenever a release is cut, for Intel and ARM machines.
+  # The package takes the repository's visibility, so it's public like the repo.
+  docker:
+    name: docker
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Work out the image tags
+        id: tags
+        env:
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          version="${TAG#v}"
+          image="ghcr.io/${GITHUB_REPOSITORY,,}"
+          {
+            echo "list<<EOF"
+            echo "$image:latest"
+            echo "$image:$version"
+            echo "$image:${version%.*}"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-qemu-action@v4
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.tags.outputs.list }}
+          labels: |
+            org.opencontainers.image.title=OpenSEO
+            org.opencontainers.image.description=Self-hosted SEO audits, a site crawler and link previews for every major platform.
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.licenses=MIT
+            org.opencontainers.image.version=${{ needs.release-please.outputs.tag_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Point the major version tag (v0) at each release, so workflows using
+  # `alexsilver8/open-seo@v0` get the latest GitHub Action without changing anything.
+  action-tag:
+    name: action-tag
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Move the major version tag
+        env:
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          major="${TAG%%.*}"
+          git fetch --depth=1 origin "refs/tags/$TAG:refs/tags/$TAG"
+          git tag -f "$major" "$TAG^{commit}"
+          git push -f origin "refs/tags/$major"
+
+  # Publish to npm whenever a release is cut. First set up npm trusted publishing
+  # (https://docs.npmjs.com/trusted-publishers) for this repo, then uncomment.
+  # publish:
+  #   name: publish
+  #   needs: release-please
+  #   if: ${{ needs.release-please.outputs.release_created == 'true' }}
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: read
+  #     id-token: write
+  #   steps:
+  #     - uses: actions/checkout@v7
+  #     - uses: pnpm/action-setup@v6
+  #     - uses: actions/setup-node@v7
+  #       with:
+  #         node-version: 24
+  #         registry-url: https://registry.npmjs.org
+  #         package-manager-cache: false
+  #     - run: pnpm install --frozen-lockfile
+  #     - run: npm publish --access public

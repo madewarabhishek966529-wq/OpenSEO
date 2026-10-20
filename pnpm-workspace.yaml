@@ -1,0 +1,9 @@
+# pnpm settings (https://pnpm.io/settings). OpenSEO is a single package, not a workspace.
+
+# Dependencies allowed to run install scripts. pnpm refuses to install while any
+# dependency's scripts are unreviewed, so new ones must be added here.
+allowBuilds:
+    esbuild: true
+    # Next.js' optional image optimizer. OpenSEO doesn't use next/image, and sharp ships
+    # prebuilt binaries, so its build script isn't needed.
+    sharp: false

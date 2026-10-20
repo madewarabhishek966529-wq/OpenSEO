@@ -1,0 +1,3 @@
+# Check out text files with LF line endings on every OS, including Windows. CRLF breaks
+# scripts/*.mjs under the test runner and doesn't match the code style (see .editorconfig).
+* text=auto eol=lf

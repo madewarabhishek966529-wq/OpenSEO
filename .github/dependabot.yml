@@ -1,0 +1,35 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
+      include: scope
+    groups:
+      github-actions:
+        patterns: ["*"]
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    ignore:
+      # Keep the Node types on a version the app supports (Node 22 and 24), not the newest Node.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      # TypeScript 7 drops the compiler API that scripts/cleaner.mjs uses. Remove this with #11.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
+    commit-message:
+      prefix: fix
+      prefix-development: chore
+      include: scope
+    groups:
+      production-dependencies:
+        dependency-type: production
+        update-types: [minor, patch]
+      development-dependencies:
+        dependency-type: development
+        update-types: [minor, patch]
