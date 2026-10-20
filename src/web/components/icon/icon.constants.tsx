@@ -147,5 +147,39 @@ export const PATHS = {
 	),
 	play: <path d="M7 5.25v9.5L14.75 10Z" />,
 	pause: <path d="M7.5 5.5v9M12.5 5.5v9" strokeWidth={2} />,
-	sparkline: <path d="M3 14.5 7 9.5l3 3 3-6 4 4.5" />
+	sparkline: <path d="M3 14.5 7 9.5l3 3 3-6 4 4.5" />,
+	tools: (
+		<>
+			<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l1.3-1.3a4 4 0 0 0-5.3-5.3l-1.3 1.3a1 1 0 0 0 0 1.4l1.6 1.6z" />
+			<path d="m14 7-9.5 9.5a1.5 1.5 0 0 1-2.1-2.1L11.9 4.9" />
+			<path d="m3 14 3 3" />
+		</>
+	),
+	sparkles: (
+		<>
+			<path d="M9.5 3 11 7l4 1.5-4 1.5L9.5 14 8 10 4 8.5 8 7z" />
+			<path d="m14 13 .75 2 2 .75-2 .75-.75 2-.75-2-2-.75 2-.75z" />
+		</>
+	),
+	copy: (
+		<>
+			<rect x="7" y="7" width="9.5" height="9.5" rx="1.5" />
+			<path d="M4 12.5V4.5A1.5 1.5 0 0 1 5.5 3H12" />
+		</>
+	),
+	robot: (
+		<>
+			<rect x="4" y="6" width="12" height="10" rx="2" />
+			<circle cx="8" cy="11" r="1" fill="currentColor" />
+			<circle cx="12" cy="11" r="1" fill="currentColor" />
+			<path d="M10 2v4M2 11h2M16 11h2" />
+		</>
+	),
+	fileText: (
+		<>
+			<path d="M12 3H5a1.5 1.5 0 0 0-1.5 1.5v11A1.5 1.5 0 0 0 5 17h10a1.5 1.5 0 0 0 1.5-1.5V7z" />
+			<path d="M12 3v4h4M7 10h6M7 13h4" />
+		</>
+	)
 }
+

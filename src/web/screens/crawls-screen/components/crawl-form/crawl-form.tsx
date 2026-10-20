@@ -17,6 +17,7 @@ const CrawlForm = (props: CrawlFormProps) => {
 	const options = pageOptions(pageLimit)
 	const [url, setUrl] = useState('')
 	const [maxPages, setMaxPages] = useState(options[Math.min(1, options.length - 1)].value)
+	const [mode, setMode] = useState<'links' | 'sitemap'>('links')
 	const [progress, setProgress] = useState<AuditProgress | null>(null)
 	const [error, setError] = useState<string | null>(null)
 
@@ -25,7 +26,7 @@ const CrawlForm = (props: CrawlFormProps) => {
 		if (!url.trim() || progress) return
 		setError(null)
 		setProgress({ step: 'start', label: 'Starting the crawl', pct: 1 })
-		await postForEvents('/api/crawl', { url, maxPages }, (event) => {
+		await postForEvents('/api/crawl', { url, maxPages, mode }, (event) => {
 			if (event.type === 'progress') setProgress(event)
 			else if (event.type === 'done') router.push(`/crawls/${event.id}`)
 			else {
@@ -51,6 +52,17 @@ const CrawlForm = (props: CrawlFormProps) => {
 						onChange={(e) => setUrl(e.currentTarget.value)}
 					/>
 				</label>
+				<select
+					className="select panel-form-select"
+					aria-label="Crawl method"
+					value={mode}
+					disabled={progress !== null}
+					onChange={(e) => setMode(e.currentTarget.value as 'links' | 'sitemap')}
+					style={{ maxWidth: '160px' }}
+				>
+					<option value="links">Follow links</option>
+					<option value="sitemap">XML sitemap</option>
+				</select>
 				<select
 					className="select panel-form-select"
 					aria-label="Pages to crawl"

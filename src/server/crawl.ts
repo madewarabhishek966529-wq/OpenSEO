@@ -23,6 +23,7 @@ const SKIPPED_EXTENSIONS =
 export interface CrawlOptions {
 	maxPages: number
 	concurrency?: number
+	mode?: 'links' | 'sitemap'
 	onProgress?(progress: AuditProgress): void
 }
 
@@ -63,6 +64,54 @@ async function readRobots(origin: string): Promise<RobotsTxt | undefined> {
 
 	return undefined
 }
+
+async function readSitemapUrls(origin: string, robots?: RobotsTxt): Promise<string[]> {
+	const candidates: string[] = []
+	if (robots?.sitemaps?.length) {
+		candidates.push(...robots.sitemaps)
+	}
+	candidates.push(`${origin}/sitemap.xml`, `${origin}/sitemap_index.xml`, `${origin}/wp-sitemap.xml`)
+
+	const foundUrls = new Set<string>()
+	for (const sitemapUrl of candidates) {
+		try {
+			const res = await safeFetch(sitemapUrl, { timeoutMs: 10_000, maxBytes: 2 * 1024 * 1024 })
+			if (res.status === 200) {
+				const body = res.body.toString('utf8')
+				const matches = body.match(/<loc>(https?:\/\/[^<]+)<\/loc>/gi)
+				if (matches) {
+					for (const match of matches) {
+						const raw = match.replace(/<\/?loc>/gi, '').trim()
+						if (raw.endsWith('.xml')) {
+							try {
+								const nestedRes = await safeFetch(raw, { timeoutMs: 8000, maxBytes: 1024 * 1024 })
+								if (nestedRes.status === 200) {
+									const nestedBody = nestedRes.body.toString('utf8')
+									const nestedMatches = nestedBody.match(/<loc>(https?:\/\/[^<]+)<\/loc>/gi)
+									if (nestedMatches) {
+										for (const nm of nestedMatches) {
+											foundUrls.add(nm.replace(/<\/?loc>/gi, '').trim())
+										}
+									}
+								}
+							} catch {
+								// ignore nested
+							}
+						} else {
+							foundUrls.add(raw)
+						}
+					}
+				}
+				if (foundUrls.size > 0) break
+			}
+		} catch {
+			// ignore fetch error
+		}
+	}
+
+	return [...foundUrls]
+}
+
 
 async function visit(url: string, depth: number, host: string): Promise<Visit> {
 	const page: CrawlPage = { url, finalUrl: url, status: null, depth, issues: [] }
@@ -205,6 +254,19 @@ export async function runCrawl(input: string, options: CrawlOptions): Promise<Cr
 
 	const queue: { url: string; depth: number }[] = [{ url: first.url, depth: 0 }]
 	const seen = new Set([crawlKey(startUrl), crawlKey(first.url)])
+
+	if (options.mode === 'sitemap') {
+		onProgress?.({ step: 'start', label: 'Discovering sitemap URLs', pct: 4 })
+		const sitemapUrls = await readSitemapUrls(origin, robots)
+		for (const u of sitemapUrls) {
+			const key = crawlKey(u)
+			if (!seen.has(key)) {
+				seen.add(key)
+				queue.push({ url: u, depth: 1 })
+			}
+		}
+	}
+
 	const visits: Visit[] = []
 	let active = 0
 

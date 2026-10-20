@@ -2,7 +2,7 @@ import type { AuditContext } from '@server/audit/context'
 import { containsTerm, topKeywords } from '@server/audit/keywords'
 import { isAllowed } from '@server/audit/robots'
 import { breadcrumbUrl, formatCount, formatNumber, formatPercent, truncate } from '@shared/format'
-import type { CheckResult, Detail } from '@shared/types'
+import type { CheckResult, Detail, Status } from '@shared/types'
 import { inCategory, listDetail, tableDetail } from './check'
 
 const check = inCategory('onpage')
@@ -732,6 +732,119 @@ function localCheck(ctx: AuditContext): CheckResult {
 	})
 }
 
+function readabilityCheck(ctx: AuditContext): CheckResult {
+	const text = ctx.text || ''
+	const wordCount = ctx.wordCount || 0
+	const base = { id: 'readability', title: 'Content readability', weight: 1, priority: 'medium' as const }
+
+	if (wordCount < 50) {
+		return check({
+			...base,
+			status: 'info',
+			summary: 'Too little text to reliably calculate reading ease.',
+			details: [{ kind: 'kv', items: [['Word count', formatNumber(wordCount)]] }]
+		})
+	}
+
+	const sentences = Math.max(1, (text.match(/[.!?]+(\s+|$)/g) || []).length)
+	const words = text.toLowerCase().match(/\b[a-z]{2,}\b/g) || []
+	let syllables = 0
+	for (const w of words) {
+		const matches = w.replace(/(?:[^laeiouy]|ed|es|e)$/, '').match(/[aeiouy]{1,2}/g)
+		syllables += matches ? matches.length : 1
+	}
+	const safeSyllables = Math.max(words.length, syllables)
+	const asl = words.length / sentences
+	const asw = safeSyllables / Math.max(1, words.length)
+	const rawScore = 206.835 - 1.015 * asl - 84.6 * asw
+	const score = Math.max(0, Math.min(100, Math.round(rawScore)))
+	const readMinutes = Math.max(1, Math.round(wordCount / 200))
+
+	let level = 'Standard / Plain English'
+	let status: Status = 'pass'
+	if (score >= 90) level = 'Very Easy (5th grade level)'
+	else if (score >= 70) level = 'Fairly Easy (7th-8th grade level)'
+	else if (score >= 60) level = 'Standard / Plain English'
+	else if (score >= 50) {
+		level = 'Fairly Difficult (High school)'
+		status = 'warn'
+	} else if (score >= 30) {
+		level = 'Difficult (College level)'
+		status = 'warn'
+	} else {
+		level = 'Very Confusing (Graduate level)'
+		status = 'fail'
+	}
+
+	const details: Detail[] = [
+		{
+			kind: 'kv',
+			items: [
+				['Flesch Reading Ease', `${score} / 100 (${level})`],
+				['Est. reading time', `~${readMinutes} min`],
+				['Word count', formatNumber(wordCount)],
+				['Avg. words per sentence', Math.round(asl).toString()]
+			]
+		}
+	]
+
+	if (status === 'pass') {
+		return check({
+			...base,
+			status: 'pass',
+			summary: `Content has good readability (${score}/100, ${level}).`,
+			details
+		})
+	}
+
+	return check({
+		...base,
+		status,
+		summary: `Content is difficult to read (${score}/100, ${level}).`,
+		recommendation:
+			'Use shorter sentences, simpler vocabulary, and clear headings to make the content easier to read and improve engagement.',
+		details
+	})
+}
+
+function richSchemaCheck(ctx: AuditContext): CheckResult {
+	const base = { id: 'rich-schema', title: 'Rich results markup', weight: 1, priority: 'medium' as const }
+	const types = ctx.jsonLd.types
+	if (!types.length) {
+		return check({
+			...base,
+			status: 'info',
+			summary: 'No Schema.org structured data types detected.',
+			recommendation:
+				'Add JSON-LD markup (such as FAQPage, Article, or Product) to qualify for Google Rich Results in search.'
+		})
+	}
+
+	const supportedRichTypes = ['FAQPage', 'Article', 'Product', 'Recipe', 'LocalBusiness', 'BreadcrumbList', 'Organization']
+	const detected = types.filter((t) => supportedRichTypes.some((s) => t.toLowerCase().includes(s.toLowerCase())))
+
+	if (!detected.length) {
+		return check({
+			...base,
+			status: 'info',
+			summary: `The page has structured data (${types.join(', ')}), but none matching primary Google Rich Results types.`,
+			details: [{ kind: 'list', items: types }]
+		})
+	}
+
+	return check({
+		...base,
+		status: 'pass',
+		summary: `The page includes Rich Results structured data: ${detected.join(', ')}.`,
+		details: [
+			{
+				kind: 'tags',
+				items: detected.map((t) => ({ label: t, tone: 'pass' }))
+			}
+		]
+	})
+}
+
 export function onPageChecks(ctx: AuditContext): CheckResult[] {
 	return [
 		titleCheck(ctx),
@@ -740,6 +853,7 @@ export function onPageChecks(ctx: AuditContext): CheckResult[] {
 		h1Check(ctx),
 		headingsCheck(ctx),
 		contentCheck(ctx),
+		readabilityCheck(ctx),
 		keywordCheck(ctx),
 		imageAltCheck(ctx),
 		canonicalCheck(ctx),
@@ -747,6 +861,7 @@ export function onPageChecks(ctx: AuditContext): CheckResult[] {
 		robotsCheck(ctx),
 		sitemapCheck(ctx),
 		structuredDataCheck(ctx),
+		richSchemaCheck(ctx),
 		langCheck(ctx),
 		hreflangCheck(ctx),
 		analyticsCheck(ctx),
@@ -755,3 +870,4 @@ export function onPageChecks(ctx: AuditContext): CheckResult[] {
 		localCheck(ctx)
 	]
 }
+

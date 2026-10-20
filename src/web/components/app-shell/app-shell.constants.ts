@@ -14,7 +14,8 @@ export const NAV: NavGroup[] = [
 		title: 'Site',
 		items: [
 			{ href: '/crawls', label: 'Crawler', icon: 'crawl' },
-			{ href: '/monitors', label: 'Monitors', icon: 'bell' }
+			{ href: '/monitors', label: 'Monitors', icon: 'bell' },
+			{ href: '/tools', label: 'SEO Utilities', icon: 'tools' }
 		]
 	},
 	{
@@ -22,5 +23,6 @@ export const NAV: NavGroup[] = [
 		items: [{ href: '/settings', label: 'Settings', icon: 'settings' }]
 	}
 ]
+
 
 export const REPOSITORY_URL = 'https://github.com/alexsilver8/open-seo'

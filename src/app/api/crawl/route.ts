@@ -12,6 +12,7 @@ export async function POST(request: Request): Promise<Response> {
 	const url = typeof body.url === 'string' ? body.url : ''
 	const settings = await getSettings()
 	const requested = typeof body.maxPages === 'number' ? body.maxPages : settings.crawlPageLimit
+	const mode = body.mode === 'sitemap' ? 'sitemap' : 'links'
 
 	if (!url.trim()) return jsonError('Enter a website address to crawl.', 400)
 	if (!takeRateLimit(`crawl:${clientIp(request)}`)) {
@@ -22,6 +23,7 @@ export async function POST(request: Request): Promise<Response> {
 		send({ type: 'progress', step: 'queued', label: 'Starting the crawl', pct: 1 })
 		const crawl = await withSlot(() =>
 			runCrawl(url, {
+				mode,
 				maxPages: Math.min(requested, settings.crawlPageLimit),
 				onProgress: (p) => send({ type: 'progress', ...p })
 			})
